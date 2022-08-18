@@ -27,6 +27,7 @@ public class Commands implements CommandExecutor {
     public boolean onCommand(org.bukkit.command.CommandSender sender, org.bukkit.command.Command command, String label,
             String[] args) {
         Player player = (Player) sender;
+
         String cmd = "";
         if (args.length > 0) {
             cmd = args[0];
@@ -36,60 +37,80 @@ public class Commands implements CommandExecutor {
         }
 
         if (args.length == 1) {
-            if (cmd.equalsIgnoreCase("list") &&
-                    (player.hasPermission("youhitmeyoudie.list")
-                            || player.hasPermission("youhitmeyoudie.*"))) {
-
-                for (String str : PlayersUsingYouKillMeYouDie) {
-                    player.sendMessage(ChatColor.YELLOW + "- " + Bukkit.getPlayer(UUID.fromString(str)).getName());
+            if (cmd.equalsIgnoreCase("list")) {
+                if (Convenient.HasPermission("youhitmeyoudie.list", player)) {
+                    for (String str : PlayersUsingYouKillMeYouDie) {
+                        player.sendMessage(ChatColor.YELLOW + "- " + Bukkit.getPlayer(UUID.fromString(str)).getName());
+                    }
+                    return true;
+                } else {
+                    Convenient.PrintString(plugin.getConfig().getString("DontHavePermission"), player,
+                            ChatColor.RED);
+                    return false;
                 }
-                return true;
-            } else if (cmd.equalsIgnoreCase("reload") &&
-                    (player.hasPermission("youhitmeyoudie.reload")
-                            || player.hasPermission("youhitmeyoudie.*"))) {
-                plugin.reloadConfig();
-                Convenient.PrintString(plugin.getConfig().getString("ReloadMessage"), player,
-                        ChatColor.GREEN);
+            } else if (cmd.equalsIgnoreCase("reload")) {
+                if (Convenient.HasPermission("youhitmeyoudie.reload", player)) {
+                    plugin.reloadConfig();
+                    Convenient.PrintString(plugin.getConfig().getString("ReloadMessage"), player,
+                            ChatColor.GREEN);
+                    return true;
+                } else {
+                    Convenient.PrintString(plugin.getConfig().getString("DontHavePermission"), player,
+                            ChatColor.RED);
+                    return false;
+                }
             }
         } else if (args.length == 2 && Bukkit.getPlayer(args[1]) != null) {
-            if (cmd.equalsIgnoreCase("add") && (player.hasPermission("youhitmeyoudie.add")
-                    || player.hasPermission("youhitmeyoudie.*"))) {
-                if (!Bukkit.getPlayer(args[1]).isOnline()) {
-                    Convenient.PrintString(plugin.getConfig().getString("NotOnlineMessage"), player, args[1],
-                            ChatColor.RED);
-                    return false;
-                } else {
-                    if (PlayersUsingYouKillMeYouDie.contains(Bukkit.getPlayer(args[1]).getUniqueId().toString())) {
-                        Convenient.PrintString(plugin.getConfig().getString("InListMessage"), player, args[1],
+            if (cmd.equalsIgnoreCase("add")) {
+                if (Convenient.HasPermission("youhitmeyoudie.add", player)) {
+                    if (!Bukkit.getPlayer(args[1]).isOnline()) {
+                        Convenient.PrintString(plugin.getConfig().getString("NotOnlineMessage"), player, args[1],
                                 ChatColor.RED);
                         return false;
+                    } else {
+                        if (PlayersUsingYouKillMeYouDie.contains(Bukkit.getPlayer(args[1]).getUniqueId().toString())) {
+                            Convenient.PrintString(plugin.getConfig().getString("InListMessage"), player, args[1],
+                                    ChatColor.RED);
+                            return false;
+                        }
+                        PlayersUsingYouKillMeYouDie.add(Bukkit.getPlayer(args[1]).getUniqueId().toString());
+                        plugin.getConfig().set("PlayersUsingYouKillMeYouDie", PlayersUsingYouKillMeYouDie);
+                        plugin.saveConfig();
+                        Convenient.PrintString(plugin.getConfig().getString("AddMessage"), player, args[1],
+                                ChatColor.GREEN);
+                        return true;
                     }
-                    PlayersUsingYouKillMeYouDie.add(Bukkit.getPlayer(args[1]).getUniqueId().toString());
-                    plugin.getConfig().set("PlayersUsingYouKillMeYouDie", PlayersUsingYouKillMeYouDie);
-                    plugin.saveConfig();
-                    Convenient.PrintString(plugin.getConfig().getString("AddMessage"), player, args[1],
-                            ChatColor.GREEN);
-                    return true;
-                }
-            } else if (cmd.equalsIgnoreCase("remove") && (player.hasPermission("youhitmeyoudie.remove")
-                    || player.hasPermission("youhitmeyoudie.*"))) {
-                if (!Bukkit.getPlayer(args[1]).isOnline()) {
-                    Convenient.PrintString(plugin.getConfig().getString("NotOnlineMessage"), player, args[1],
+                } else {
+                    Convenient.PrintString(plugin.getConfig().getString("DontHavePermission"), player,
                             ChatColor.RED);
                     return false;
-                } else {
-                    if (!PlayersUsingYouKillMeYouDie.contains(Bukkit.getPlayer(args[1]).getUniqueId().toString())) {
-                        Convenient.PrintString(plugin.getConfig().getString("NotInListMessage"), player, args[1],
+                }
+
+            } else if (cmd.equalsIgnoreCase("remove")) {
+                if (Convenient.HasPermission("youhitmeyoudie.add", player)) {
+                    if (!Bukkit.getPlayer(args[1]).isOnline()) {
+                        Convenient.PrintString(plugin.getConfig().getString("NotOnlineMessage"), player, args[1],
                                 ChatColor.RED);
                         return false;
+                    } else {
+                        if (!PlayersUsingYouKillMeYouDie.contains(Bukkit.getPlayer(args[1]).getUniqueId().toString())) {
+                            Convenient.PrintString(plugin.getConfig().getString("NotInListMessage"), player, args[1],
+                                    ChatColor.RED);
+                            return false;
+                        }
+                        PlayersUsingYouKillMeYouDie.remove(Bukkit.getPlayer(args[1]).getUniqueId().toString());
+                        plugin.getConfig().set("PlayersUsingYouKillMeYouDie", PlayersUsingYouKillMeYouDie);
+                        plugin.saveConfig();
+                        Convenient.PrintString(plugin.getConfig().getString("RemoveMessage"), player, args[1],
+                                ChatColor.GREEN);
+                        return true;
                     }
-                    PlayersUsingYouKillMeYouDie.remove(Bukkit.getPlayer(args[1]).getUniqueId().toString());
-                    plugin.getConfig().set("PlayersUsingYouKillMeYouDie", PlayersUsingYouKillMeYouDie);
-                    plugin.saveConfig();
-                    Convenient.PrintString(plugin.getConfig().getString("RemoveMessage"), player, args[1],
-                            ChatColor.GREEN);
-                    return true;
+                } else {
+                    Convenient.PrintString(plugin.getConfig().getString("DontHavePermission"), player,
+                            ChatColor.RED);
+                    return false;
                 }
+
             }
         } else if (Bukkit.getPlayer(args[1]) == null) {
             Convenient.PrintString(plugin.getConfig().getString("NullPlayerMessage"),

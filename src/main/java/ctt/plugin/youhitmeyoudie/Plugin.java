@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import ctt.plugin.youhitmeyoudie.handlers.OnHitHandler;
+import ctt.plugin.youhitmeyoudie.handlers.TabCompletion;
 import net.md_5.bungee.api.ChatColor;
 
 /*
@@ -19,7 +20,9 @@ public class Plugin extends JavaPlugin {
     LOGGER.info(ChatColor.YELLOW + "You Hit Me You Die is on");
 
     new Commands(this);
+    getCommand("youhitmeyoudie").setTabCompleter(new TabCompletion());
     new OnHitHandler(this);
+
     saveDefaultConfig();
 
   }

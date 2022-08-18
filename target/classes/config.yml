@@ -16,4 +16,5 @@ AddMessage: "You add %player% to the list"
 InListMessage: "%player% is already in list"
 NotOnlineMessage: "%player% is not online right now"
 NullPlayerMessage: "%player% isn't exist in your server"
+DontHavePermission: "You don't have permission use this command"
 PlayersUsingYouKillMeYouDie:

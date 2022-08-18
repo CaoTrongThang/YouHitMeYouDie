@@ -33,4 +33,12 @@ public class Convenient {
     public static void PrintString(String path, Player p, ChatColor color) {
         p.sendMessage(color + path);
     }
+
+    public static Boolean HasPermission(String permission, Player p) {
+        if (p.hasPermission(permission) || p.hasPermission("youhitmeyoudie.*")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
